@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <base href="http://localhost:8000/admin/">
+  <title>Narudzbina</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="main.css">
+  <script src="logout.js"></script>
+  <script src="narudzbina.js"></script>
+</head>
+
+<body>
+  <main class="container">
+    <div class="row">
+      <nav class="navbar navbar-expand-sm bg-light justify-content-center">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="index.html">Dashboard</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="jela.html">Ponuda</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="narudzbine.html">Narudzbine</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link active" href="kategorije.html">Kategorije</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="sastojci.html">Sastojci</a>
+          </li>
+        </ul>
+      </nav>
+      <div class="col-md-12 bg-light">
+        <button type="button" class="btn btn-warning float-end" id="logout">Log Out</button>
+      </div>
+    </div>
+    <h1>Narudžbina izmena</h1>
+    <form action="http://postman-echo.com/post " method="post" id="forma">
+      <label for="vreme">Zakazano vreme:</label>
+      <input type="text" class="form-control" id="vreme" name="vreme" readonly>
+      <label for="adresa">Adresa:</label>
+      <input type="text" class="form-control" id="adresa" name="adresa" required>
+      <div class="formContainer">
+        <div class="formElement">
+          <label for="status-narudzbine">Status:</label>
+          <select class="form-select" name="status-narudzbine" id="status-narudzbine">
+            <option value="1">Novo</option>
+            <option value="2">Prihvaćeno</option>
+            <option value="3">Odbijeno</option>
+            <option value="4">U pripremi</option>
+            <option value="5">U dostavi</option>
+            <option value="6">Završeno</option>
+          </select>
+        </div>
+        <div class="formElement">
+          <label for="telefon">Telefon:</label>
+          <input type="text" class="form-control" id="telefon" name="telefon" required>
+        </div>
+      </div>
+      <div class="formElement">
+        <label for="telefon">Ime i Prezime:</label>
+        <input type="text" class="form-control" id="ime_prezime" name="ime_prezime" required>
+      </div>
+
+      <div class="formContainer" style="margin: 5px;">
+        <div class="formElement">
+          <label for="spisakJela">Jela:</label>
+          <select class="form-select" id="spisakJela">
+            <option></option>
+          </select>
+        </div>
+        <div class="formElement">
+          <label for="kolicina">Kolicina:</label>
+          <div class="input-group mb-3">
+            <input type="number" min="0" step="1" id="kolicina" name="kolicina" class="form-control"
+              style="max-width: 100px;">
+            <button class="btn btn-success" type="button" id="dodajJelo">+</button>
+          </div>
+
+        </div>
+      </div>
+      <div id="stavka">
+
+      </div>
+      <div class="mt-3 mb-3">
+        <button class="btn btn-primary">Unesi</button>
+        <a href="kategorije.html" class="btn btn-link">Nazad</a>
+        <a href="#" class="btn btn-danger" id="obrisi">Obriši</a>
+      </div>
+      <input type="hidden" name="jela" id="jela-input">
+    </form>
+  </main>
+  <script>
+    var id = null;
+    var btnObrisi = document.getElementById('obrisi');
+    window.addEventListener("load", function () {
+      console.log(document.cookie);
+      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+      console.log("Cookies: ", cookies);
+
+      const token = cookies.find(cookie => cookie.startsWith('token='));
+      console.log("Token: ", token);
+      var url = new URL(window.location.href);
+      id = url.searchParams.get("id");
+      // alert(id); 
+      fetch("http://localhost:9000/jelo/", {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          for (let i = 0; i < data.length; i++) {
+            let opcija = document.createElement("option");
+            opcija.value = data[i].id;
+            opcija.innerHTML = data[i].naziv;
+
+            document.getElementById("spisakJela").appendChild(opcija);
+          }
+
+        })
+        .catch(err => console.log(err));
+
+
+
+      fetch("http://localhost:9000/narudzbina/" + id, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+      })
+        .then(resp => resp.json())
+        .then(data => {
+          console.log(data);
+          const removeLast8 = data.vreme_narucivanja.slice(0, -8);
+          document.getElementById("vreme").value = removeLast8.replaceAll('T', '\t');
+          document.getElementById("adresa").value = data.adresa;
+          document.getElementById("telefon").value = data.telefon;
+          document.getElementById("ime_prezime").value = data.ime_prezime;
+
+          for (let i = 0; i < data.stavke.length; i++) {
+
+            setTimeout(() => {
+              data.stavke.forEach(stavka => {
+                dodajJelo(stavka.jelo_id, stavka.komada);
+              });
+            }, 50);
+
+            document.getElementById("spisakJela").appendChild(opcija);
+          }
+
+        })
+        .catch(err => console.log(err));
+    });
+    document.getElementById("forma").addEventListener("submit", function (event) {
+      event.preventDefault();
+      console.log(document.cookie);
+      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+      console.log("Cookies: ", cookies);
+
+      const token = cookies.find(cookie => cookie.startsWith('token='));
+      console.log("Token: ", token);
+      var url = new URL(window.location.href);
+      id = url.searchParams.get("id");
+      var status;
+      var value = parseInt(document.getElementById("status-narudzbine").value);
+      switch (value) {
+        case 1:
+          status = "Novo";
+          break;
+        case 2:
+          status = "Prihvaćeno";
+          break;
+        case 3:
+          status = "Odbijeno";
+          break;
+        case 4:
+          status = "U pripremi";
+          break;
+        case 5:
+          status = "U dostavi";
+          break;
+        case 6:
+          status = "Završeno";
+          break;
+      }
+      stavkeList = [];
+      Array.from(document.querySelectorAll("#stavka > span.badge")).forEach(span => {
+        var stavka = {
+          jelo_id: span.dataset.id,
+          komada: span.dataset.kolicina,
+          narudzbina_id: id
+        };
+        stavkeList.push(stavka);
+        fetch("http://localhost:9000/narudzbina/" + id, {
+          method: "PUT",
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            status: status,
+            vreme_narucivanja: document.getElementById("vreme").value,
+            adresa: document.getElementById("adresa").value,
+            telefon: document.getElementById("telefon").value,
+            ime_prezime: document.getElementById("ime_prezime").value,
+            stavke: stavkeList
+          })
+        })
+          .then(succ => succ.json())
+          .then(data => {
+          })
+          .catch(err => {
+            console.log(err)
+            alert("Onemogucena izmena ove narudzbine");
+          });
+      });
+    });
+
+    btnObrisi.addEventListener('click', function () {
+      console.log(document.cookie);
+      const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+      console.log("Cookies: ", cookies);
+
+      const token = cookies.find(cookie => cookie.startsWith('token='));
+      console.log("Token: ", token);
+      if (confirm('Potvrdi brisanje')) {
+        fetch("http://localhost:9000/narudzbina/" + id, { method: "DELETE",
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        },
+        })
+          .then(resp => resp.json()).then(data => {
+            alert("Obrisan je zapis " + data);
+            window.location.href = `narudzbine.html`;
+          })
+          .catch(err => {
+            console.log(err)
+            alert("Onemoguceno brisanje ove narudzbine");
+          });
+      } else {
+        return;
+      }
+    });
+  </script>
+</body>
+
+</html>

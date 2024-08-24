@@ -1,0 +1,87 @@
+body{ background-color: #d3e1e2; }
+main.container{ 
+    background-color:white; 
+    box-shadow: 0px 0px 12px black; 
+    border:1px solid black; 
+    margin-top:15px; 
+}
+.formContainer {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 0;
+}
+
+.formElement {
+    width: 50%;
+}
+
+.error{ border-color:red; }
+.success{ border-color:green; }
+
+#sadrzaj {
+    padding-left: 5px;
+}
+
+#status {
+    width: 200px;
+    margin-left: 10px;
+}
+
+.listaUTabeli {
+    list-style: none;
+    padding-left: 0;
+}
+
+.information {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: center;
+    text-align: center;
+    flex-direction: column;
+    background-position: center;
+    background-repeat: no-repeat;
+     background-attachment: fixed;
+    background-size: 100%;
+}
+
+.items {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    align-content: center;
+    gap: 35px;
+}
+
+.item {
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+}
+
+img.itempic {
+    padding:8px;
+    border: 1px solid black;
+    border-width: 5px;
+    border-color: #1F2937;
+    border-radius: 15px;
+    background-color: #E5E7EB;
+    height: 150px;
+    width: 150px
+}
+
+p.infotext {
+    color: #000000;
+    text-shadow: 2px 1px #c7c7c7;
+    font-weight: bold;
+}
+
+h2 {
+    padding: 10px;
+    text-shadow: 2px 2px #ffffff;
+    align-self: center;
+    width: 500px
+}
+

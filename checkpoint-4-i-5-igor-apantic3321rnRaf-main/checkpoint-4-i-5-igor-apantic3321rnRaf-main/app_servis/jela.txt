@@ -1,0 +1,5 @@
+{"naziv":"Čokoladni Kolač","opis":"Veoma ukusan","kategorija":"4","cena":"1000"}
+{"naziv":"Margarita-mala","opis":"Za decu","kategorija":"1","cena":"350"}
+{"naziv":"Margarita-velika","opis":"Za odrasle","kategorija":"1","cena":"650"}
+{"naziv":"Klasični sendvič 1m","opis":"Da, stvarno je 1m dužine","kategorija":"2","cena":"2000"}
+{"naziv":"Vegetariana-mala","opis":"Za vegane","kategorija":"1","cena":"300"}
